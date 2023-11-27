@@ -1,11 +1,22 @@
-import torch
+import sys, torch
 from init import test_dataloader, model, device, loss_fn
 
+# Read the weights from `stdin`.
+input = sys.stdin.readline().strip()
+input_weights = [float(w) for w in input.split(" ")]
 
+# Load the weights into the model.
+i = 0
+for param in model.parameters():
+    weights = input_weights[i : i + param.numel()]
+    param.data = torch.tensor(weights).reshape(param.shape).to(device)
+    i += param.numel()
+
+# Test the model.
+model.eval()
 size = len(test_dataloader.dataset)
 num_batches = len(test_dataloader)
-model.eval()
-test_loss, correct = 0, 0
+test_loss = correct = 0
 with torch.no_grad():
     for X, y in test_dataloader:
         X, y = X.to(device), y.to(device)
@@ -15,4 +26,5 @@ with torch.no_grad():
 test_loss /= num_batches
 correct /= size
 
-print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg. Loss: {test_loss:>8f} \n")
+# Print the accuracy and average loss to `stdout`.
+print(f"{(100 * correct):>0.1f} {test_loss:>8f}")
