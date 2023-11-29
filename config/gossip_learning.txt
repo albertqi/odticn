@@ -1,27 +1,20 @@
 # Gossip Learning
 
 random.seed 1234567890
-simulation.cycles 100
+simulation.cycles 30
 
 control.shf Shuffle
 
-network.size 500000
+network.size 3
  
 protocol.lnk IdleProtocol
 
-protocol.avg example.aggregation.AverageFunction
+protocol.avg TestNode
 protocol.avg.linkable lnk
  
 init.rnd WireKOut
 init.rnd.protocol lnk
 init.rnd.k 1
 
-init.lin LinearDistribution
-init.lin.protocol avg
-init.lin.max 100
-init.lin.min 1
-
-include.init rnd lin
-
-control.avgo example.aggregation.AverageObserver
+control.avgo TestObserver
 control.avgo.protocol avg
