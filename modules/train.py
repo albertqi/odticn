@@ -23,7 +23,7 @@ def main():
 
     # Train the model.
     model.train()
-    for _, (X, y) in enumerate(train_dataloader):
+    for X, y in train_dataloader:
         X, y = X.to(device), y.to(device)
 
         # Compute prediction error.

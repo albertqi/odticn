@@ -23,8 +23,7 @@ def main():
 
     # Test the model.
     model.eval()
-    size = len(test_dataloader.dataset)
-    num_batches = len(test_dataloader)
+    size, num_batches = len(test_dataloader.dataset), len(test_dataloader)
     test_loss = correct = 0
     with torch.no_grad():
         for X, y in test_dataloader:
