@@ -1,14 +1,15 @@
 import sys, torch
 from init import test_dataloader, model, device, loss_fn
 
-# Read the weights from `stdin`.
-input = sys.stdin.readline().strip()
-input_weights = [float(w) for w in input.split(" ")]
+# Read the weights from `stdin` as bytes.
+input = torch.frombuffer(
+    bytearray(sys.stdin.buffer.read()), dtype=torch.float32
+).tolist()
 
 # Load the weights into the model.
 i = 0
 for param in model.parameters():
-    weights = input_weights[i : i + param.numel()]
+    weights = input[i : i + param.numel()]
     param.data = torch.tensor(weights).reshape(param.shape).to(device)
     i += param.numel()
 

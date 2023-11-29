@@ -1,4 +1,4 @@
-import torch
+import sys, torch
 from torch import nn
 from torch.nn import functional as F
 from torch.utils.data import DataLoader
@@ -79,5 +79,5 @@ weights = []
 for param in model.parameters():
     weights += torch.flatten(param.data).tolist()
 
-# Print the weights to `stdout`.
-print(" ".join([str(w) for w in weights]))
+# Dump the weights to `stdout` as bytes.
+sys.stdout.buffer.write(torch.tensor(weights).numpy().tobytes())
