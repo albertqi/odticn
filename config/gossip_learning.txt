@@ -1,7 +1,7 @@
 # Gossip Learning
 
 random.seed 1234567890
-simulation.cycles 30
+simulation.cycles 5
 
 control.shf Shuffle
 
@@ -14,7 +14,7 @@ protocol.avg.linkable lnk
  
 init.rnd WireKOut
 init.rnd.protocol lnk
-init.rnd.k 1
+init.rnd.k 2
 
 control.avgo TestObserver
 control.avgo.protocol avg

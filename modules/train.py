@@ -24,7 +24,7 @@ def main():
     # Read the weights from `stdin` as bytes.
     buffer = []
     while len(buffer) < num_weights * 4:
-        buffer += sys.stdin.buffer.read()
+        buffer += sys.stdin.buffer.read(num_weights * 4 - len(buffer))
     input = torch.frombuffer(
         bytearray(buffer), dtype=torch.float32, count=num_weights
     ).tolist()
