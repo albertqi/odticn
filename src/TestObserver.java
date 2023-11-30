@@ -25,6 +25,6 @@ public class TestObserver implements Control {
         avg_acc /= Network.size();
         System.out.printf("Min/Max/Average accuracy: %.3f %.3f %.3f\n", min_acc, max_acc, avg_acc);
 
-        return max_acc >= 80;
+        return max_acc >= 90;
     }
 }

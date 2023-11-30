@@ -12,7 +12,7 @@ def main():
     generator = torch.Generator().manual_seed(seed)
     sampler = RandomSampler(
         test_data,
-        num_samples=len(test_data) // num_nodes,
+        num_samples=len(test_data),
         generator=generator,
     )
     dataloader = DataLoader(

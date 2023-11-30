@@ -26,7 +26,7 @@ public class TestNode implements CDProtocol {
         weights = new ArrayList<>();
 
         System.out.println("Initializing node with random weights");
-        Process modelInit = new ProcessBuilder("python", "modules/init.py").start();
+        Process modelInit = new ProcessBuilder("python3", "modules/init.py").start();
         var input = modelInit.getInputStream();
         weightsFromInputStream(input);
         if (temp_weights == null) {
@@ -52,7 +52,7 @@ public class TestNode implements CDProtocol {
 
     public void train(int id) {
         try {
-            Process train = new ProcessBuilder("python", "modules/train.py", "" + weights.size(), "" + 3, "" + id).start();
+            Process train = new ProcessBuilder("python3", "modules/train.py", "" + weights.size(), "" + 3, "" + id).start();
             var output = train.getOutputStream();
             var input = train.getInputStream();
             for (int i = 0; i < weights.size(); i++) {
@@ -69,7 +69,7 @@ public class TestNode implements CDProtocol {
   
     public void test(int id) {
         try {
-            Process test = new ProcessBuilder("python", "modules/test.py", "" + weights.size(), "" + 3, "" + id).start();
+            Process test = new ProcessBuilder("python3", "modules/test.py", "" + weights.size(), "" + 3, "" + id).start();
             var output = test.getOutputStream();
             var input = new Scanner(test.getInputStream());
             for (int i = 0; i < weights.size(); i++) {
