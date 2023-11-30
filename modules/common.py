@@ -1,7 +1,6 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
-from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
 # Define the data transformations.
@@ -27,10 +26,6 @@ test_data = datasets.MNIST(
 
 # Initialize batch size.
 batch_size = 64
-
-# Create data loaders.
-train_dataloader = DataLoader(training_data, batch_size=batch_size, shuffle=True)
-test_dataloader = DataLoader(test_data, batch_size=batch_size, shuffle=True)
 
 # Get the device.
 device = (

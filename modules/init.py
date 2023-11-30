@@ -12,9 +12,7 @@ def main():
         weights += torch.flatten(param.data).tolist()
 
     # Dump the weights to `stdout` as bytes.
-    sys.stdout.buffer.write(len(weights).to_bytes(4, byteorder="little"))
     sys.stdout.buffer.write(torch.tensor(weights).numpy().tobytes())
-    sys.stdout.flush()
 
 
 if __name__ == "__main__":

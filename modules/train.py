@@ -1,17 +1,32 @@
 import sys, torch
-from common import device, loss_fn, NeuralNetwork, optimizer, train_dataloader
+from common import batch_size, device, loss_fn, NeuralNetwork, optimizer, training_data
+from torch.utils.data import DataLoader, RandomSampler
 
 
 def main():
+    # Parse command-line arguments.
+    assert len(sys.argv) == 4
+    num_weights, num_nodes, seed = map(int, sys.argv[1:4])
+
+    # Initialize the data loader.
+    generator = torch.Generator().manual_seed(seed)
+    sampler = RandomSampler(
+        training_data,
+        num_samples=len(training_data) // num_nodes,
+        generator=generator,
+    )
+    dataloader = DataLoader(
+        training_data,
+        batch_size=batch_size,
+        sampler=sampler,
+    )
+
     # Read the weights from `stdin` as bytes.
     buffer = []
-    while len(buffer) < 4:
-        buffer += sys.stdin.buffer.read()
-    num_weights = int.from_bytes(buffer[:4], byteorder="little")
-    while len(buffer) < 4 + (num_weights * 4):
+    while len(buffer) < num_weights * 4:
         buffer += sys.stdin.buffer.read()
     input = torch.frombuffer(
-        bytearray(buffer[4:]), dtype=torch.float32, count=num_weights
+        bytearray(buffer), dtype=torch.float32, count=num_weights
     ).tolist()
 
     # Load the weights into the model.
@@ -23,7 +38,7 @@ def main():
 
     # Train the model.
     model.train()
-    for X, y in train_dataloader:
+    for X, y in dataloader:
         X, y = X.to(device), y.to(device)
 
         # Compute prediction error.
@@ -32,8 +47,8 @@ def main():
 
         # Perform backpropagation.
         loss.backward()
-        optimizer(model.parameters()).step()
-        optimizer(model.parameters()).zero_grad()
+        optimizer(model.parameters(), lr=0.001).step()
+        optimizer(model.parameters(), lr=0.001).zero_grad()
 
     # Flatten the weights.
     weights = []
@@ -41,9 +56,7 @@ def main():
         weights += torch.flatten(param.data).tolist()
 
     # Dump the weights to `stdout` as bytes.
-    sys.stdout.buffer.write(len(weights).to_bytes(4, byteorder="little"))
     sys.stdout.buffer.write(torch.tensor(weights).numpy().tobytes())
-    sys.stdout.flush()
 
 
 if __name__ == "__main__":
