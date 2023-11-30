@@ -1,8 +1,26 @@
 import sys, torch
-from common import device, loss_fn, NeuralNetwork, test_dataloader
+from common import batch_size, device, loss_fn, NeuralNetwork, test_data
+from torch.utils.data import DataLoader, RandomSampler
 
 
 def main():
+    # Parse command-line arguments.
+    assert len(sys.argv) == 4
+    num_weights, num_nodes, seed = map(int, sys.argv[1:4])
+
+    # Initialize the data loader.
+    generator = torch.Generator().manual_seed(seed)
+    sampler = RandomSampler(
+        test_data,
+        num_samples=len(test_data) // num_nodes,
+        generator=generator,
+    )
+    dataloader = DataLoader(
+        test_data,
+        batch_size=batch_size,
+        sampler=sampler,
+    )
+
     # Read the weights from `stdin` as bytes.
     buffer = []
     while len(buffer) < 4:
@@ -23,10 +41,10 @@ def main():
 
     # Test the model.
     model.eval()
-    size, num_batches = len(test_dataloader.dataset), len(test_dataloader)
+    size, num_batches = len(dataloader.dataset), len(dataloader)
     test_loss = correct = 0
     with torch.no_grad():
-        for X, y in test_dataloader:
+        for X, y in dataloader:
             X, y = X.to(device), y.to(device)
             pred = model(X)
             test_loss += loss_fn(pred, y).item()
