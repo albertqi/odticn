@@ -50,8 +50,8 @@ def main():
 
         # Perform backpropagation.
         loss.backward()
-        optimizer(model.parameters()).step()
-        optimizer(model.parameters()).zero_grad()
+        optimizer(model.parameters(), lr=0.001).step()
+        optimizer(model.parameters(), lr=0.001).zero_grad()
 
     # Flatten the weights.
     weights = []
