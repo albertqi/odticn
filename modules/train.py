@@ -1,6 +1,6 @@
 import sys, torch
 from common import batch_size, device, loss_fn, NeuralNetwork, optimizer, training_data
-from torch.utils.data import DataLoader, RandomSampler
+from torch.utils.data import DataLoader, RandomSampler, Subset
 
 
 def main():
@@ -9,16 +9,19 @@ def main():
     num_weights, num_nodes, seed = map(int, sys.argv[1:4])
 
     # Initialize the data loader.
-    generator = torch.Generator().manual_seed(seed)
-    sampler = RandomSampler(
-        training_data,
-        num_samples=len(training_data),
-        generator=generator,
-    )
+    # generator = torch.Generator().manual_seed(seed)
+    # sampler = RandomSampler(
+    #     training_data,
+    #     num_samples=len(training_data) * 3 // 5,
+    #     generator=generator,
+    # )
+    a = len(training_data) // 3
+    
+    s = Subset(training_data, range(a * seed, (a + 1) * seed))
     dataloader = DataLoader(
-        training_data,
+        s,
         batch_size=batch_size,
-        sampler=sampler,
+        # sampler=sampler,
     )
 
     # Read the weights from `stdin` as bytes.
@@ -47,8 +50,8 @@ def main():
 
         # Perform backpropagation.
         loss.backward()
-        optimizer(model.parameters(), lr=0.001).step()
-        optimizer(model.parameters(), lr=0.001).zero_grad()
+        optimizer(model.parameters(), lr=0.01).step()
+        optimizer(model.parameters(), lr=0.01).zero_grad()
 
     # Flatten the weights.
     weights = []

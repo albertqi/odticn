@@ -22,6 +22,8 @@ public class TestNode implements CDProtocol {
     double test_accuracy;
     double test_loss;
 
+    int cycle_count = 0;
+
     public TestNode(String str) throws IOException {
         weights = new ArrayList<>();
 
@@ -45,7 +47,6 @@ public class TestNode implements CDProtocol {
                 weights.add(weight);
             }
         }
-        System.out.println("num weights: " + weights.size());
 
         this.weights = weights;
     }
@@ -88,30 +89,35 @@ public class TestNode implements CDProtocol {
 
     @Override
     public void nextCycle(Node node, int protocolID) {
-        // First, run a training iteration.
-        train(node.getIndex());
-        // Then, run a test iteration.
-        test(node.getIndex());
+        if (cycle_count % 3 != 0) {
+            System.out.println("Training node " + node.getIndex());
+            // First, run a training iteration.
+            train(node.getIndex());
+            // Then, run a test iteration.
+            test(node.getIndex());
+        } else {
+            // Then, average our new model with neighbors.
+            int linkableID = FastConfig.getLinkable(protocolID);
+            Linkable linkable = (Linkable) node.getProtocol(linkableID);
+            if (linkable.degree() > 0) {
+                Node peer = linkable.getNeighbor(CommonState.r.nextInt(linkable
+                        .degree()));
 
-        // Then, average our new model with neighbors.
-        int linkableID = FastConfig.getLinkable(protocolID);
-        Linkable linkable = (Linkable) node.getProtocol(linkableID);
-        if (linkable.degree() > 0) {
-            Node peer = linkable.getNeighbor(CommonState.r.nextInt(linkable
-                    .degree()));
+                // Failure handling
+                if (!peer.isUp())
+                    return;
 
-            // Failure handling
-            if (!peer.isUp())
-                return;
-
-            TestNode neighbor = (TestNode) peer.getProtocol(protocolID);
-            List<Float> other_weights = neighbor.getWeights();
-            for (int i = 0; i < weights.size(); i++) {
-                temp_weights[i] = (weights.get(i) + other_weights.get(i)) / 2.0f;
+                TestNode neighbor = (TestNode) peer.getProtocol(protocolID);
+                List<Float> other_weights = neighbor.getWeights();
+                for (int i = 0; i < weights.size(); i++) {
+                    temp_weights[i] = (weights.get(i) + other_weights.get(i)) / 2.0f;
+                }
+                // neighbor.setWeights(new ArrayList<>(Arrays.asList(temp_weights)));
+                this.weights = new ArrayList<>(Arrays.asList(temp_weights));
+                test(node.getIndex());
             }
-            neighbor.setWeights(new ArrayList<>(Arrays.asList(temp_weights)));
-            this.weights = new ArrayList<>(Arrays.asList(temp_weights));
         }
+        cycle_count++;
     }
 
     public List<Float> getWeights() {
