@@ -1,7 +1,6 @@
 import peersim.config.Configuration;
 import peersim.core.Control;
 import peersim.core.Network;
-import peersim.core.Node;
 
 public class TestObserver implements Control {
     private int pid;
@@ -25,6 +24,7 @@ public class TestObserver implements Control {
         avg_acc /= Network.size();
         System.out.printf("Min/Max/Average accuracy: %.3f %.3f %.3f\n", min_acc, max_acc, avg_acc);
 
-        return max_acc >= 90;
+        return false;
+        // return max_acc >= 90;
     }
 }

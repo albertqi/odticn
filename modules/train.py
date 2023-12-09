@@ -1,24 +1,25 @@
 import sys, torch
-from common import batch_size, device, loss_fn, NeuralNetwork, optimizer, training_data
-from torch.utils.data import DataLoader, RandomSampler
+from common import batch_size, device, loss_fn, NeuralNetwork, optimizer, training_data, test_data
+from torch.utils.data import DataLoader, RandomSampler, Subset
 
 
 def main():
     # Parse command-line arguments.
     assert len(sys.argv) == 4
-    num_weights, num_nodes, seed = map(int, sys.argv[1:4])
+    num_weights, num_nodes, id = map(int, sys.argv[1:4])
 
     # Initialize the data loader.
-    generator = torch.Generator().manual_seed(seed)
+    generator = torch.Generator().manual_seed(1)
     sampler = RandomSampler(
         training_data,
         num_samples=len(training_data),
         generator=generator,
     )
     dataloader = DataLoader(
-        training_data,
+        Subset(training_data, list(range(id, len(training_data) // 25, num_nodes))),
         batch_size=batch_size,
-        sampler=sampler,
+        # sampler=sampler,
+        shuffle=True
     )
 
     # Read the weights from `stdin` as bytes.
@@ -38,8 +39,10 @@ def main():
 
     # Train the model.
     model.train()
+    optim = optimizer(model.parameters(), lr=0.1)
     for X, y in dataloader:
         X, y = X.to(device), y.to(device)
+        optim.zero_grad()
 
         # Compute prediction error.
         pred = model(X)
@@ -47,8 +50,7 @@ def main():
 
         # Perform backpropagation.
         loss.backward()
-        optimizer(model.parameters(), lr=0.001).step()
-        optimizer(model.parameters(), lr=0.001).zero_grad()
+        optim.step()
 
     # Flatten the weights.
     weights = []
