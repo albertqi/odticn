@@ -9,17 +9,19 @@ def main():
     num_weights, num_nodes, id = map(int, sys.argv[1:4])
 
     # Initialize the data loader.
-    generator = torch.Generator().manual_seed(1)
-    sampler = RandomSampler(
-        training_data,
-        num_samples=len(training_data),
-        generator=generator,
-    )
+    # generator = torch.Generator().manual_seed(seed)
+    # sampler = RandomSampler(
+    #     training_data,
+    #     num_samples=len(training_data) * 3 // 5,
+    #     generator=generator,
+    # )
+    a = len(training_data) // 3
+    
+    s = Subset(training_data, range(a * id, (a + 1) * id))
     dataloader = DataLoader(
-        Subset(training_data, list(range(id, len(training_data) // 25, num_nodes))),
+        s,
         batch_size=batch_size,
         # sampler=sampler,
-        shuffle=True
     )
 
     # Read the weights from `stdin` as bytes.

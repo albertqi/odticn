@@ -25,6 +25,8 @@ public class TestNode implements CDProtocol {
     double test_accuracy;
     double test_loss;
 
+    int cycle_count = 0;
+
     public TestNode(String str) throws IOException {
         weights = new ArrayList<>();
 
@@ -48,7 +50,6 @@ public class TestNode implements CDProtocol {
                 weights.add(weight);
             }
         }
-        System.out.println("num weights: " + weights.size());
 
         this.weights = weights;
     }

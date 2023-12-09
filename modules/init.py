@@ -4,6 +4,7 @@ from common import device, NeuralNetwork
 
 def main():
     # Initialize the model.
+    torch.manual_seed(0)
     model = NeuralNetwork().to(device)
 
     # Flatten the weights.
