@@ -1,91 +1,42 @@
 import java.util.ArrayList;
 
+import peersim.config.Configuration;
 import peersim.config.FastConfig;
 import peersim.core.Linkable;
 import peersim.core.Node;
 
 /**
  * This class implements the AllReduce scheme for communicating weight within
- * the network.
+ * the network with a constant decreased aggregration frequency.
  */
-public class DecreasedAllReduce extends NodeBase {
+public class DecreasedAllReduce extends AllReduce {
 
-    private enum STATE {
-        SEND,
-        WAIT,
-        RECEIVE
-    }
-
-    private STATE share_state = STATE.SEND;
+    /**
+     * The cycle frequency in which to perform all reduce.
+     */
+    private final int SHARE_FREQUENCY;
 
     private int cycle_count = 0;
 
-    public DecreasedAllReduce(String str) {
-        super(str);
+    public DecreasedAllReduce(String prefix) {
+        super(prefix);
+        SHARE_FREQUENCY = Configuration.getInt("protocol.avg.freq");
     }
 
     @Override
     public void shareWeights(Node node, int protocolID) {
         cycle_count++;
 
-        if (cycle_count % 2 != 0) {
+        if (cycle_count % SHARE_FREQUENCY != 0) {
             setTrain();
             return;
         }
 
-        if (share_state == STATE.SEND) {
-            share_state = STATE.WAIT;
-            if (node.getID() == 0) {
-                return;
-            }
-
-            // Send weights to node 0.
-            int linkableID = FastConfig.getLinkable(protocolID);
-            Linkable linkable = (Linkable) node.getProtocol(linkableID);
-            for (int i = 0; i < linkable.degree(); i++) {
-                Node neighbor = linkable.getNeighbor(i);
-                if (neighbor.getID() == 0) {
-                    NodeBase receiver = (NodeBase) neighbor.getProtocol(protocolID);
-                    receiver.sendTo(modelWeights);
-                }
-            }
-        } else if (share_state == STATE.WAIT) {
-            share_state = STATE.RECEIVE;
-            if (node.getID() != 0) {
-                return;
-            }
-            // Calculate average model.
-            while (!receivedModels.isEmpty()) {
-                ArrayList<Float> nextModel = receivedModels.pop();
-                for (int i = 0; i < modelWeights.size(); i++) {
-                    modelWeights.set(i, modelWeights.get(i) + nextModel.get(i));
-                }
-            }
-            for (int i = 0; i < modelWeights.size(); i++) {
-                modelWeights.set(i, modelWeights.get(i) / Constants.NETWORK_SIZE);
-            }
-            // Distribute average model back to nodes.
-            int linkableID = FastConfig.getLinkable(protocolID);
-            Linkable linkable = (Linkable) node.getProtocol(linkableID);
-            for (int i = 0; i < linkable.degree(); i++) {
-                Node neighbor_node = linkable.getNeighbor(i);
-                NodeBase nodeBase = (NodeBase) neighbor_node.getProtocol(protocolID);
-                nodeBase.sendTo(modelWeights);
-            }
-        } else {
-            share_state = STATE.SEND;
-            setTrain();
-            if (node.getID() == 0) {
-                return;
-            }
-            // Receive averaged model.
-            ArrayList<Float> newModel = receivedModels.pop();
-            modelWeights = new ArrayList<>(newModel);
-        }
+        super.shareWeights(node, protocolID);
     }
 
     @Override
     public Object clone() {
-        return new AllReduce("AllReduce");
+        return new DecreasedAllReduce("DecreasedAllReduce");
     }
 }
