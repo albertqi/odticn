@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.CountDownLatch;
 
 import peersim.cdsim.CDProtocol;
+import peersim.core.CommonState;
 import peersim.core.Node;
 
 /**
@@ -66,6 +67,11 @@ public abstract class NodeBase implements CDProtocol {
      * Worker thread that performs the training/weight sharing loops.
      */
     private Thread operationsThread;
+    
+    /**
+     * List of current latencies from this node to every other node.
+     */
+    private double[] currLatencies;
 
     /**
      * Shares this model's weights throughout the network.
@@ -82,6 +88,12 @@ public abstract class NodeBase implements CDProtocol {
         trainCycle = true;
         modelWeights = new ArrayList<>();
         receivedModels = new ConcurrentLinkedDeque<>();
+
+        // Initialize latencies randomly from 0.5 to 3.5 seconds.
+        currLatencies = new double[Constants.NETWORK_SIZE];
+        for (int i = 0; i < currLatencies.length; i++) {
+            currLatencies[i] = 0.5 + CommonState.r.nextDouble() * 3;
+        }
 
         try {
             System.out.println("Initializing model...");
@@ -142,19 +154,31 @@ public abstract class NodeBase implements CDProtocol {
     public double getTestAccuracy() {
         return testAccuracy;
     }
-
+        
     /**
      * Simulates sending weights to this node over a network with some latency.
      */
-    public double sendTo(ArrayList<Float> weights) {
-        receivedModels.add(weights);
+    public double sendTo(int senderID, ArrayList<Float> weights) {
+        // Get current latency and sleep for that amount of time.
+        new Thread(() -> {
+            // Sleep for the specified latency.
+            double latency = currLatencies[senderID];
+            try {
+                Thread.sleep((long) (latency * 1000));
+            } catch (InterruptedException e) {}
 
-        // TODO: Generate random latency.
-        double latency = 0.0;
+            // Then, add weights to queue.
+            receivedModels.add(weights);
+        }).start();
 
-        receiveLatency += latency;
-
-        return latency;
+        synchronized (currLatencies) {
+            double latency = currLatencies[senderID];
+            // Update latency by adding a random value between -0.2 and 0.2.
+            double delta = 0.4 * CommonState.r.nextDouble() - 0.2;
+            currLatencies[senderID] = Math.max(latency + delta, 0.0);
+            
+            return latency;
+        }
     }
 
     /**

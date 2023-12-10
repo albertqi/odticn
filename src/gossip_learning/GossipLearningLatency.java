@@ -21,7 +21,7 @@ public class GossipLearningLatency extends GossipLearningRandom {
 
     // Send weights to a random node based on latency, returning the index of that node.
     @Override
-    protected int sendToRandomNode(ArrayList<Node> neighbors, int protocolID) {
+    protected int sendToRandomNode(Node node, ArrayList<Node> neighbors, int protocolID) {
         ArrayList<Double> latenciesCum = new ArrayList<Double>();
         double totalLatency = 0.0;
         for (int i = 0; i < neighbors.size(); i++) {
@@ -34,7 +34,7 @@ public class GossipLearningLatency extends GossipLearningRandom {
             if (rand <= latenciesCum.get(i)) {
                 Node neighbor = neighbors.get(i);
                 NodeBase neighborGossipLearning = (NodeBase) neighbor.getProtocol(protocolID);
-                prevLatencies[(int) neighbor.getID()] = neighborGossipLearning.sendTo(modelWeights);
+                prevLatencies[(int) neighbor.getID()] = neighborGossipLearning.sendTo((int) node.getID(), modelWeights);
                 return i;
             }
         }

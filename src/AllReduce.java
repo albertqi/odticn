@@ -42,7 +42,7 @@ public class AllReduce extends NodeBase {
             for (int i = 0; i < linkable.degree(); i++) {
                 Node neighbor_node = linkable.getNeighbor(i);
                 NodeBase nodeBase = (NodeBase) neighbor_node.getProtocol(protocolID);
-                nodeBase.sendTo(modelWeights);
+                nodeBase.sendTo((int) node.getID(), modelWeights);
             }
         } else {
             // Send weights to node 0.
@@ -52,7 +52,7 @@ public class AllReduce extends NodeBase {
                 Node neighbor = linkable.getNeighbor(i);
                 if (neighbor.getID() == 0) {
                     NodeBase receiver = (NodeBase) neighbor.getProtocol(protocolID);
-                    receiver.sendTo(modelWeights);
+                    receiver.sendTo((int) node.getID(), modelWeights);
                 }
             }
 
