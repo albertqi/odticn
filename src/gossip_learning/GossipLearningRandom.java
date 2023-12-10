@@ -51,9 +51,6 @@ public class GossipLearningRandom extends NodeBase {
             int neighborIndex = sendToRandomNode(node, neighbors, protocolID);
             neighbors.remove(neighborIndex);
         }
-
-        // Proceed to training.
-        setTrain();
     }
 
     @Override
