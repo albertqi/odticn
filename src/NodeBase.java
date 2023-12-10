@@ -154,7 +154,7 @@ public abstract class NodeBase implements CDProtocol {
     public double getTestAccuracy() {
         return testAccuracy;
     }
-        
+
     /**
      * Simulates sending weights to this node over a network with some latency.
      */
