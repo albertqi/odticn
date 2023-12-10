@@ -7,37 +7,22 @@ import peersim.core.Linkable;
 import peersim.core.Node;
 
 /**
- * This class implements the GossipLearning scheme for communicating weight within
+ * This class implements the GossipLearningRandom scheme for communicating weight within
  * the network.
  */
-public class GossipLearning extends NodeBase {
+public class GossipLearningRandom extends NodeBase {
 
-    // List of previous latencies for each node.
-    private double[] prevLatencies = new double[Constants.NETWORK_SIZE];
-    
-    public GossipLearning(String str) {
+    public GossipLearningRandom(String str) {
         super(str);
     }
 
     // Send weights to a random node, returning the index of that node.
-    private int sendToRandomNode(ArrayList<Node> neighbors, int protocolID) {
-        ArrayList<Double> latenciesCum = new ArrayList<Double>();
-        double totalLatency = 0.0;
-        for (int i = 0; i < neighbors.size(); i++) {
-            int neighborID = (int) neighbors.get(i).getID();
-            totalLatency += prevLatencies[neighborID];
-            latenciesCum.add(totalLatency);
-        }
-        double rand = CommonState.r.nextDouble() * totalLatency;
-        for (int i = 0; i < latenciesCum.size(); i++) {
-            if (rand <= latenciesCum.get(i)) {
-                Node neighbor = neighbors.get(i);
-                NodeBase neighborGossipLearning = (NodeBase) neighbor.getProtocol(protocolID);
-                prevLatencies[(int) neighbor.getID()] = neighborGossipLearning.sendTo(modelWeights);
-                return i;
-            }
-        }
-        return -1;
+    protected int sendToRandomNode(ArrayList<Node> neighbors, int protocolID) {
+        int randIndex = CommonState.r.nextInt(neighbors.size());
+        Node neighbor = neighbors.get(randIndex);
+        NodeBase neighborGossipLearning = (NodeBase) neighbor.getProtocol(protocolID);
+        neighborGossipLearning.sendTo(modelWeights);
+        return randIndex;
     }
 
     @Override
@@ -73,6 +58,6 @@ public class GossipLearning extends NodeBase {
 
     @Override
     public Object clone() {
-        return new GossipLearning("GossipLearning");
+        return new GossipLearningRandom("GossipLearningRandom");
     }
 }

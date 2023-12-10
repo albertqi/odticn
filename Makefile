@@ -23,10 +23,19 @@ decreased_all_reduce:
 	javac -cp "$(CP)" -d bin/ src/StateObserver.java
 	java -cp "$(CP):bin" peersim.Simulator config/decreased_all_reduce.config
 
-gossip_learning:
+gossip_learning_random:
 	mkdir -p bin/
 	javac -cp "$(CP)" -d bin/ src/Constants.java
 	javac -cp "$(CP)" -d bin/ src/NodeBase.java
-	javac -cp "$(CP)" -d bin/ src/GossipLearning.java
+	javac -cp "$(CP)" -d bin/ src/gossip_learning/GossipLearningRandom.java
 	javac -cp "$(CP)" -d bin/ src/StateObserver.java
-	java -cp "$(CP):bin" peersim.Simulator config/gossip_learning.config
+	java -cp "$(CP):bin" peersim.Simulator config/gossip_learning/gossip_learning_random.config
+
+gossip_learning_latency:
+	mkdir -p bin/
+	javac -cp "$(CP)" -d bin/ src/Constants.java
+	javac -cp "$(CP)" -d bin/ src/NodeBase.java
+	javac -cp "$(CP)" -d bin/ src/gossip_learning/GossipLearningRandom.java
+	javac -cp "$(CP)" -d bin/ src/gossip_learning/GossipLearningLatency.java
+	javac -cp "$(CP)" -d bin/ src/StateObserver.java
+	java -cp "$(CP):bin" peersim.Simulator config/gossip_learning/gossip_learning_latency.config
