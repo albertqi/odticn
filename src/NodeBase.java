@@ -22,7 +22,7 @@ public abstract class NodeBase implements CDProtocol {
      * Paths to PyTorch scripts from the project root.
      */
     private static final String initScriptPath = "modules/init.py";
-    private static final String trainScriptPath = "modules/trian.py";
+    private static final String trainScriptPath = "modules/train.py";
     private static final String testScriptPath = "modules/test.py";
 
     /**
@@ -44,12 +44,17 @@ public abstract class NodeBase implements CDProtocol {
     /**
      * Tracks whether to train this cycle or share weights.
      */
-    private boolean trainCycle = true;
+    private boolean trainCycle;
 
     /**
      * Tracks how many training cycles have been completed.
      */
-    private int currentIteration = 0;
+    private int currentIteration;
+
+    /**
+     * Tracks the accumlated latency in sending weights to this node.
+     */
+    private double receiveLatency;
 
     /**
      * Shares this model's weights throughout the network.
@@ -62,7 +67,13 @@ public abstract class NodeBase implements CDProtocol {
     public abstract Object clone();
 
     public NodeBase(String name) {
+        currentIteration = 0;
+        trainCycle = true;
+        modelWeights = new ArrayList<>();
+        receivedModels = new ArrayDeque<>();
+
         try {
+            System.out.println("Initializing model...");
             InputStream input = runScript(initScriptPath, 0, false);
             modelWeights = parseWeights(input);
         } catch (IOException e) {
@@ -81,14 +92,15 @@ public abstract class NodeBase implements CDProtocol {
     public void nextCycle(Node node, int protocolID) {
         if (trainCycle) {
             train(node.getIndex());
+            test(node.getIndex());
             currentIteration++;
             trainCycle = false;
         } else {
             shareWeights(node, protocolID);
+            test(node.getIndex());
         }
-        test(node.getIndex());
     }
-
+    
     /**
      * Sets the next cycle to be a training iteration.
      */
@@ -108,6 +120,20 @@ public abstract class NodeBase implements CDProtocol {
      */
     public void pushWeights(ArrayList<Float> weights) {
         receivedModels.add(weights);
+    }
+
+    /**
+     * Simulates sending weights to this node over a network with some latency.
+     */
+    public double sendTo(ArrayList<Float> weights) {
+        pushWeights(weights);
+
+        // TODO: Generate random latency.
+        double latency = 0.0;
+
+        receiveLatency += latency;
+
+        return latency;
     }
 
     /**

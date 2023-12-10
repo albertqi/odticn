@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 
 def main():
     # Parse command-line arguments.
-    assert len(sys.argv) == 2
+    assert len(sys.argv) >= 2
     num_weights = int(sys.argv[1])
 
     # Initialize the data loader.

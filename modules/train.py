@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader, Subset
 
 def main():
     # Parse command-line arguments.
-    assert len(sys.argv) == 6
+    assert len(sys.argv) >= 6
     num_weights, num_nodes, id, curr_iter, num_iter = map(int, sys.argv[1:6])
 
     # Initialize the data loader.

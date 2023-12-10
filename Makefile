@@ -6,8 +6,10 @@ test:
 	javac -cp "$(CP):bin" -d bin/ src/TestRunner.java
 	java -cp "$(CP):bin" TestRunner
 
-all:
+all_reduce:
 	mkdir -p bin/
-	javac -cp "$(CP)" -d bin/ src/TestNode.java
-	javac -cp "$(CP)" -d bin/ src/TestObserver.java
-	java -cp "$(CP):bin" peersim.Simulator config/gossip_learning.txt
+	javac -cp "$(CP)" -d bin/ src/Constants.java
+	javac -cp "$(CP)" -d bin/ src/NodeBase.java
+	javac -cp "$(CP)" -d bin/ src/AllReduce.java
+	javac -cp "$(CP)" -d bin/ src/AllReduceObserver.java
+	java -cp "$(CP):bin" peersim.Simulator config/all_reduce.config
