@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 import peersim.cdsim.CDProtocol;
+import peersim.core.CommonState;
 import peersim.core.Node;
 
 /**
@@ -57,6 +58,11 @@ public abstract class NodeBase implements CDProtocol {
     private double receiveLatency;
 
     /**
+     * List of current latencies from this node to every other node.
+     */
+    private double[] currLatencies;
+
+    /**
      * Shares this model's weights throughout the network.
      * 
      * This method should be implemented by child classes.
@@ -71,6 +77,12 @@ public abstract class NodeBase implements CDProtocol {
         trainCycle = true;
         modelWeights = new ArrayList<>();
         receivedModels = new ArrayDeque<>();
+
+        // Initialize latencies randomly from 1.5 to 2.5 seconds.
+        currLatencies = new double[Constants.NETWORK_SIZE];
+        for (int i = 0; i < currLatencies.length; i++) {
+            currLatencies[i] = 1.5 + CommonState.r.nextDouble();
+        }
 
         try {
             System.out.println("Initializing model...");
@@ -131,14 +143,23 @@ public abstract class NodeBase implements CDProtocol {
     /**
      * Simulates sending weights to this node over a network with some latency.
      */
-    public double sendTo(ArrayList<Float> weights) {
+    public double sendTo(int senderID, ArrayList<Float> weights) {
+        // Get current latency and sleep for that amount of time.
+        double latency = currLatencies[senderID];
+        try {
+            Thread.sleep((long) (latency * 1000));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Add weights to queue.
         pushWeights(weights);
 
-        // TODO: Generate random latency.
-        double latency = 0.0;
+        // Update latency by adding a random value between -0.1 and 0.1.
+        double delta = 0.2 * CommonState.r.nextDouble() - 0.1;
+        currLatencies[senderID] = latency + delta;
 
         receiveLatency += latency;
-
         return latency;
     }
 
