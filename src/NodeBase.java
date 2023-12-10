@@ -78,10 +78,10 @@ public abstract class NodeBase implements CDProtocol {
         modelWeights = new ArrayList<>();
         receivedModels = new ArrayDeque<>();
 
-        // Initialize latencies randomly from 1.5 to 2.5 seconds.
+        // Initialize latencies randomly from 0.5 to 3.5 seconds.
         currLatencies = new double[Constants.NETWORK_SIZE];
         for (int i = 0; i < currLatencies.length; i++) {
-            currLatencies[i] = 1.5 + CommonState.r.nextDouble();
+            currLatencies[i] = 0.5 + CommonState.r.nextDouble() * 3;
         }
 
         try {
@@ -155,9 +155,9 @@ public abstract class NodeBase implements CDProtocol {
         // Add weights to queue.
         pushWeights(weights);
 
-        // Update latency by adding a random value between -0.1 and 0.1.
-        double delta = 0.2 * CommonState.r.nextDouble() - 0.1;
-        currLatencies[senderID] = latency + delta;
+        // Update latency by adding a random value between -0.2 and 0.2.
+        double delta = 0.4 * CommonState.r.nextDouble() - 0.2;
+        currLatencies[senderID] = Math.max(latency + delta, 0.0);
 
         receiveLatency += latency;
         return latency;

@@ -17,11 +17,11 @@ public class GossipLearningRandom extends NodeBase {
     }
 
     // Send weights to a random node, returning the index of that node.
-    protected int sendToRandomNode(ArrayList<Node> neighbors, int protocolID) {
+    protected int sendToRandomNode(Node node, ArrayList<Node> neighbors, int protocolID) {
         int randIndex = CommonState.r.nextInt(neighbors.size());
         Node neighbor = neighbors.get(randIndex);
         NodeBase neighborGossipLearning = (NodeBase) neighbor.getProtocol(protocolID);
-        neighborGossipLearning.sendTo(modelWeights);
+        neighborGossipLearning.sendTo((int) node.getID(), modelWeights);
         return randIndex;
     }
 
@@ -48,7 +48,7 @@ public class GossipLearningRandom extends NodeBase {
         }
         int n = neighbors.size();
         for (int i = 0; i < n / 2; i++) {
-            int neighborIndex = sendToRandomNode(neighbors, protocolID);
+            int neighborIndex = sendToRandomNode(node, neighbors, protocolID);
             neighbors.remove(neighborIndex);
         }
 
