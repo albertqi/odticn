@@ -38,8 +38,8 @@ public abstract class NodeBase implements CDProtocol {
     /**
      * The test accuracy and loss calucated after each training cycle.
      */
-    protected double testAccuracy;
-    protected double testLoss;
+    private double testAccuracy;
+    private double testLoss;
 
     /**
      * Tracks whether to train this cycle or share weights.
@@ -97,7 +97,6 @@ public abstract class NodeBase implements CDProtocol {
             trainCycle = false;
         } else {
             shareWeights(node, protocolID);
-            test(node.getIndex());
         }
     }
     
@@ -106,6 +105,13 @@ public abstract class NodeBase implements CDProtocol {
      */
     protected void setTrain() {
         trainCycle = true;
+    }
+
+    /**
+     * Returns whether the current cycle is a training cycle.
+     */
+    public boolean isTrainingCycle() {
+        return trainCycle;
     }
 
     /**

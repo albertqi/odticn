@@ -11,7 +11,7 @@ all_reduce:
 	javac -cp "$(CP)" -d bin/ src/Constants.java
 	javac -cp "$(CP)" -d bin/ src/NodeBase.java
 	javac -cp "$(CP)" -d bin/ src/AllReduce.java
-	javac -cp "$(CP)" -d bin/ src/AllReduceObserver.java
+	javac -cp "$(CP)" -d bin/ src/StateObserver.java
 	java -cp "$(CP):bin" peersim.Simulator config/all_reduce.config
 
 gossip_learning:
@@ -19,5 +19,5 @@ gossip_learning:
 	javac -cp "$(CP)" -d bin/ src/Constants.java
 	javac -cp "$(CP)" -d bin/ src/NodeBase.java
 	javac -cp "$(CP)" -d bin/ src/GossipLearning.java
-	javac -cp "$(CP)" -d bin/ src/GossipLearningObserver.java
+	javac -cp "$(CP)" -d bin/ src/StateObserver.java
 	java -cp "$(CP):bin" peersim.Simulator config/gossip_learning.config

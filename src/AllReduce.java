@@ -9,7 +9,7 @@ import peersim.core.Node;
  * the network.
  */
 public class AllReduce extends NodeBase {
-    
+
     private enum STATE {
         SEND,
         WAIT,
@@ -29,7 +29,7 @@ public class AllReduce extends NodeBase {
             if (node.getID() == 0) {
                 return;
             }
-            
+
             // Send weights to node 0.
             int linkableID = FastConfig.getLinkable(protocolID);
             Linkable linkable = (Linkable) node.getProtocol(linkableID);
@@ -46,15 +46,14 @@ public class AllReduce extends NodeBase {
                 return;
             }
             // Calculate average model.
-            ArrayList<Float> sumWeights = new ArrayList<>(modelWeights);
             while (!receivedModels.isEmpty()) {
                 ArrayList<Float> nextModel = receivedModels.pop();
-                for (int i = 0; i < sumWeights.size(); i++) {
-                    sumWeights.set(i, sumWeights.get(i) + nextModel.get(i));
+                for (int i = 0; i < modelWeights.size(); i++) {
+                    modelWeights.set(i, modelWeights.get(i) + nextModel.get(i));
                 }
             }
-            for (int i = 0; i < sumWeights.size(); i++) {
-                modelWeights.set(i, sumWeights.get(i) / Constants.NETWORK_SIZE);
+            for (int i = 0; i < modelWeights.size(); i++) {
+                modelWeights.set(i, modelWeights.get(i) / Constants.NETWORK_SIZE);
             }
             // Distribute average model back to nodes.
             int linkableID = FastConfig.getLinkable(protocolID);
