@@ -66,4 +66,4 @@ class NeuralNetwork(nn.Module):
 
 # Define the loss function and optimizer.
 loss_fn = F.nll_loss
-optimizer = torch.optim.Adadelta
+optimizer = torch.optim.SGD
