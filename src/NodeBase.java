@@ -3,10 +3,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.CountDownLatch;
 
 import peersim.cdsim.CDProtocol;
 import peersim.core.Node;
@@ -26,6 +27,11 @@ public abstract class NodeBase implements CDProtocol {
     private static final String testScriptPath = "modules/test.py";
 
     /**
+     * Tracks when to end the simulation.
+     */
+    public static final CountDownLatch simulationComplete = new CountDownLatch(1);
+
+    /**
      * The weights for the current model iteration.
      */
     protected ArrayList<Float> modelWeights;
@@ -33,7 +39,7 @@ public abstract class NodeBase implements CDProtocol {
     /**
      * The models that this node has reveiced from peers since the last cycle.
      */
-    protected ArrayDeque<ArrayList<Float>> receivedModels;
+    protected ConcurrentLinkedDeque<ArrayList<Float>> receivedModels;
 
     /**
      * The test accuracy and loss calucated after each training cycle.
@@ -57,6 +63,11 @@ public abstract class NodeBase implements CDProtocol {
     private double receiveLatency;
 
     /**
+     * Worker thread that performs the training/weight sharing loops.
+     */
+    private Thread operationsThread;
+
+    /**
      * Shares this model's weights throughout the network.
      * 
      * This method should be implemented by child classes.
@@ -70,7 +81,7 @@ public abstract class NodeBase implements CDProtocol {
         currentIteration = 0;
         trainCycle = true;
         modelWeights = new ArrayList<>();
-        receivedModels = new ArrayDeque<>();
+        receivedModels = new ConcurrentLinkedDeque<>();
 
         try {
             System.out.println("Initializing model...");
@@ -90,21 +101,32 @@ public abstract class NodeBase implements CDProtocol {
      */
     @Override
     public void nextCycle(Node node, int protocolID) {
-        if (trainCycle) {
-            train(node.getIndex());
-            test(node.getIndex());
-            currentIteration++;
-            trainCycle = false;
-        } else {
-            shareWeights(node, protocolID);
+        if (operationsThread == null) {
+            operationsThread = new Thread(() -> {
+                while (true) {
+                    modelWeights = train(node.getIndex());
+                    testAccuracy = test(node.getIndex());
+                    currentIteration++;
+
+                    shareWeights(node, protocolID);
+                    System.out.println("Node " + node.getID() + ": iteration " + currentIteration + " complete. Accuracy = " + testAccuracy);
+
+                    if (testAccuracy > 90) {
+                        System.exit(0);
+                    }
+                }
+            });
+            System.out.println("Starting worker thread for node " + node.getID());
+            operationsThread.start();
+            return;
         }
-    }
-    
-    /**
-     * Sets the next cycle to be a training iteration.
-     */
-    protected void setTrain() {
-        trainCycle = true;
+
+        // Put the simulator to sleep.
+        try {
+            simulationComplete.await();
+        } catch (InterruptedException e) {
+            // Do nothing...
+        }
     }
 
     /**
@@ -122,17 +144,10 @@ public abstract class NodeBase implements CDProtocol {
     }
 
     /**
-     * Receives the given weights and adds them to a queue.
-     */
-    public void pushWeights(ArrayList<Float> weights) {
-        receivedModels.add(weights);
-    }
-
-    /**
      * Simulates sending weights to this node over a network with some latency.
      */
     public double sendTo(ArrayList<Float> weights) {
-        pushWeights(weights);
+        receivedModels.add(weights);
 
         // TODO: Generate random latency.
         double latency = 0.0;
@@ -145,14 +160,15 @@ public abstract class NodeBase implements CDProtocol {
     /**
      * Performs a training iteration
      */
-    private void train(int id) {
+    private ArrayList<Float> train(int id) {
         try {
             InputStream scriptOutput = runScript(trainScriptPath, id, true, Integer.toString(currentIteration),
                     Integer.toString(Constants.ITERATIONS));
-            modelWeights = parseWeights(scriptOutput);
+            return parseWeights(scriptOutput);
         } catch (IOException e) {
             System.err.println("Failed to run " + trainScriptPath);
             e.printStackTrace();
+            return modelWeights;
         }
     }
 
@@ -160,16 +176,18 @@ public abstract class NodeBase implements CDProtocol {
      * Calculates the test accuracy with the current model weights and stores it
      * in testAccuracy and testLoss.
      */
-    private void test(int id) {
+    private double test(int id) {
         try {
             InputStream scriptOutput = runScript(testScriptPath, id, true);
             Scanner scanner = new Scanner(scriptOutput);
             testAccuracy = scanner.nextDouble();
             testLoss = scanner.nextDouble();
             scanner.close();
+            return testAccuracy;
         } catch (IOException e) {
             System.err.println("Failed to run " + testScriptPath);
             e.printStackTrace();
+            return this.testAccuracy;
         }
     }
 

@@ -10,41 +10,21 @@ import peersim.core.Node;
  */
 public class AllReduce extends NodeBase {
 
-    private enum STATE {
-        SEND,
-        WAIT,
-        RECEIVE
-    }
-
-    private STATE share_state = STATE.SEND;
-
     public AllReduce(String str) {
         super(str);
     }
 
     @Override
     public void shareWeights(Node node, int protocolID) {
-        if (share_state == STATE.SEND) {
-            share_state = STATE.WAIT;
-            if (node.getID() == 0) {
-                return;
+        if (node.getID() == 0) {
+            // Wait for all models to be received.
+            while (receivedModels.size() < Constants.NETWORK_SIZE - 1) {
+                // block
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {}
             }
 
-            // Send weights to node 0.
-            int linkableID = FastConfig.getLinkable(protocolID);
-            Linkable linkable = (Linkable) node.getProtocol(linkableID);
-            for (int i = 0; i < linkable.degree(); i++) {
-                Node neighbor = linkable.getNeighbor(i);
-                if (neighbor.getID() == 0) {
-                    NodeBase receiver = (NodeBase) neighbor.getProtocol(protocolID);
-                    receiver.sendTo(modelWeights);
-                }
-            }
-        } else if (share_state == STATE.WAIT) {
-            share_state = STATE.RECEIVE;
-            if (node.getID() != 0) {
-                return;
-            }
             // Calculate average model.
             while (!receivedModels.isEmpty()) {
                 ArrayList<Float> nextModel = receivedModels.pop();
@@ -55,6 +35,7 @@ public class AllReduce extends NodeBase {
             for (int i = 0; i < modelWeights.size(); i++) {
                 modelWeights.set(i, modelWeights.get(i) / Constants.NETWORK_SIZE);
             }
+
             // Distribute average model back to nodes.
             int linkableID = FastConfig.getLinkable(protocolID);
             Linkable linkable = (Linkable) node.getProtocol(linkableID);
@@ -64,12 +45,24 @@ public class AllReduce extends NodeBase {
                 nodeBase.sendTo(modelWeights);
             }
         } else {
-            share_state = STATE.SEND;
-            setTrain();
-            if (node.getID() == 0) {
-                return;
+            // Send weights to node 0.
+            int linkableID = FastConfig.getLinkable(protocolID);
+            Linkable linkable = (Linkable) node.getProtocol(linkableID);
+            for (int i = 0; i < linkable.degree(); i++) {
+                Node neighbor = linkable.getNeighbor(i);
+                if (neighbor.getID() == 0) {
+                    NodeBase receiver = (NodeBase) neighbor.getProtocol(protocolID);
+                    receiver.sendTo(modelWeights);
+                }
             }
+
             // Receive averaged model.
+            while (receivedModels.size() < 1) {
+                // block
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {}
+            }
             ArrayList<Float> newModel = receivedModels.pop();
             modelWeights = new ArrayList<>(newModel);
         }
