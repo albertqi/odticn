@@ -1,8 +1,4 @@
-import java.util.ArrayList;
-
 import peersim.config.Configuration;
-import peersim.config.FastConfig;
-import peersim.core.Linkable;
 import peersim.core.Node;
 
 /**
@@ -28,7 +24,6 @@ public class DecreasedAllReduce extends AllReduce {
         cycle_count++;
 
         if (cycle_count % SHARE_FREQUENCY != 0) {
-            setTrain();
             return;
         }
 
