@@ -29,7 +29,7 @@ public class GossipLearningRandom extends NodeBase {
     public void shareWeights(Node node, int protocolID) {
         // Aggregate all weights from `receivedModels`.
         int numReceivedModels = receivedModels.size();
-        while (!receivedModels.isEmpty()) {
+        for (int k = 0; k < numReceivedModels; k++) {
             ArrayList<Float> weights = receivedModels.poll();
             for (int i = 0; i < weights.size(); i++) {
                 modelWeights.set(i, modelWeights.get(i) + weights.get(i));
