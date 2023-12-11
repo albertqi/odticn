@@ -1,0 +1,84 @@
+mkdir -p bin/
+javac -cp "lib/peersim-1.0.5.jar:lib/jep-2.3.0.jar:lib/djep-1.0.0.jar:bin" -d bin/ src/Constants.java
+javac -cp "lib/peersim-1.0.5.jar:lib/jep-2.3.0.jar:lib/djep-1.0.0.jar:bin" -d bin/ src/NodeBase.java
+javac -cp "lib/peersim-1.0.5.jar:lib/jep-2.3.0.jar:lib/djep-1.0.0.jar:bin" -d bin/ src/all_reduce/AllReduce.java
+javac -cp "lib/peersim-1.0.5.jar:lib/jep-2.3.0.jar:lib/djep-1.0.0.jar:bin" -d bin/ src/all_reduce/AllReduceDecreased.java
+java -cp "lib/peersim-1.0.5.jar:lib/jep-2.3.0.jar:lib/djep-1.0.0.jar:bin:bin" peersim.Simulator config/all_reduce/all_reduce_decreased.config
+
+
+
+Initializing model...
+Initializing model...
+Initializing model...
+Initializing model...
+Initializing model...
+Initializing model...
+Initializing model...
+Initializing model...
+Initializing model...
+Initializing model...
+Starting worker thread for node 1
+Starting worker thread for node 8
+Starting worker thread for node 6
+Starting worker thread for node 3
+Starting worker thread for node 4
+Starting worker thread for node 5
+Starting worker thread for node 7
+Starting worker thread for node 0
+Starting worker thread for node 2
+[1702269455760]: Node 3: iteration 0 complete. Accuracy = 14.4
+[1702269463771]: Node 8: iteration 0 complete. Accuracy = 27.2
+[1702269464512]: Node 4: iteration 0 complete. Accuracy = 20.7
+[1702269466727]: Node 6: iteration 0 complete. Accuracy = 30.9
+[1702269467555]: Node 5: iteration 0 complete. Accuracy = 34.4
+[1702269467899]: Node 0: iteration 0 complete. Accuracy = 38.8
+[1702269469237]: Node 2: iteration 0 complete. Accuracy = 40.9
+[1702269470043]: Node 1: iteration 0 complete. Accuracy = 37.3
+[1702269470168]: Node 7: iteration 0 complete. Accuracy = 46.1
+[1702269527317]: Node 7: iteration 3 complete. Accuracy = 49.6
+[1702269528451]: Node 0: iteration 3 complete. Accuracy = 46.3
+[1702269533327]: Node 3: iteration 3 complete. Accuracy = 52.7
+[1702269539274]: Node 5: iteration 3 complete. Accuracy = 65.0
+[1702269540051]: Node 6: iteration 3 complete. Accuracy = 34.9
+[1702269540234]: Node 8: iteration 3 complete. Accuracy = 44.6
+[1702269540250]: Node 2: iteration 3 complete. Accuracy = 44.5
+[1702269540328]: Node 1: iteration 3 complete. Accuracy = 54.2
+[1702269540506]: Node 4: iteration 3 complete. Accuracy = 58.8
+[1702269590936]: Node 0: iteration 6 complete. Accuracy = 65.6
+[1702269611542]: Node 7: iteration 6 complete. Accuracy = 61.5
+[1702269613198]: Node 1: iteration 6 complete. Accuracy = 50.4
+[1702269613689]: Node 4: iteration 6 complete. Accuracy = 72.3
+[1702269614776]: Node 5: iteration 6 complete. Accuracy = 70.8
+[1702269616036]: Node 3: iteration 6 complete. Accuracy = 58.4
+[1702269619818]: Node 6: iteration 6 complete. Accuracy = 72.8
+[1702269620343]: Node 8: iteration 6 complete. Accuracy = 72.5
+[1702269621123]: Node 2: iteration 6 complete. Accuracy = 65.3
+[1702269648643]: Node 0: iteration 9 complete. Accuracy = 67.5
+[1702269681444]: Node 3: iteration 9 complete. Accuracy = 52.6
+[1702269682098]: Node 5: iteration 9 complete. Accuracy = 71.0
+[1702269683533]: Node 1: iteration 9 complete. Accuracy = 63.4
+[1702269683906]: Node 7: iteration 9 complete. Accuracy = 83.8
+[1702269685863]: Node 4: iteration 9 complete. Accuracy = 76.8
+[1702269686171]: Node 8: iteration 9 complete. Accuracy = 67.1
+[1702269686178]: Node 6: iteration 9 complete. Accuracy = 82.2
+[1702269686245]: Node 2: iteration 9 complete. Accuracy = 70.4
+[1702269729605]: Node 0: iteration 12 complete. Accuracy = 76.2
+[1702269757413]: Node 7: iteration 12 complete. Accuracy = 80.2
+[1702269760394]: Node 3: iteration 12 complete. Accuracy = 61.3
+[1702269760712]: Node 5: iteration 12 complete. Accuracy = 76.0
+[1702269761657]: Node 1: iteration 12 complete. Accuracy = 77.0
+[1702269763368]: Node 6: iteration 12 complete. Accuracy = 50.1
+[1702269764168]: Node 4: iteration 12 complete. Accuracy = 85.7
+[1702269766178]: Node 8: iteration 12 complete. Accuracy = 79.5
+[1702269768116]: Node 2: iteration 12 complete. Accuracy = 83.4
+[1702269812640]: Node 0: iteration 15 complete. Accuracy = 85.7
+[1702269822839]: Node 7: iteration 15 complete. Accuracy = 85.8
+[1702269829682]: Node 4: iteration 15 complete. Accuracy = 83.1
+[1702269832437]: Node 1: iteration 15 complete. Accuracy = 73.7
+[1702269832769]: Node 5: iteration 15 complete. Accuracy = 64.0
+[1702269832960]: Node 3: iteration 15 complete. Accuracy = 74.4
+[1702269833258]: Node 6: iteration 15 complete. Accuracy = 81.3
+[1702269833455]: Node 2: iteration 15 complete. Accuracy = 72.8
+[1702269833509]: Node 8: iteration 15 complete. Accuracy = 84.7
+[1702269868477]: Node 0: iteration 18 complete. Accuracy = 90.2
+Simulation time: 461.17 seconds
