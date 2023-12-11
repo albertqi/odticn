@@ -7,6 +7,7 @@ def main():
     # Parse command-line arguments.
     assert len(sys.argv) >= 6
     num_weights, num_nodes, id, curr_iter, num_iter = map(int, sys.argv[1:6])
+    curr_iter %= num_iter
 
     # Initialize the data loader.
     shard_size = len(training_data) // num_nodes
