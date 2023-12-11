@@ -15,6 +15,22 @@ all_reduce_decreased:
 	javac -cp "$(CP)" -d bin/ src/all_reduce/AllReduceDecreased.java
 	java -cp "$(CP):bin" peersim.Simulator config/all_reduce/all_reduce_decreased.config
 
+all_reduce_decreased4:
+	mkdir -p bin/
+	javac -cp "$(CP)" -d bin/ src/Constants.java
+	javac -cp "$(CP)" -d bin/ src/NodeBase.java
+	javac -cp "$(CP)" -d bin/ src/all_reduce/AllReduce.java
+	javac -cp "$(CP)" -d bin/ src/all_reduce/AllReduceDecreased.java
+	java -cp "$(CP):bin" peersim.Simulator config/all_reduce/all_reduce_decreased4.config
+
+all_reduce_decreased8:
+	mkdir -p bin/
+	javac -cp "$(CP)" -d bin/ src/Constants.java
+	javac -cp "$(CP)" -d bin/ src/NodeBase.java
+	javac -cp "$(CP)" -d bin/ src/all_reduce/AllReduce.java
+	javac -cp "$(CP)" -d bin/ src/all_reduce/AllReduceDecreased.java
+	java -cp "$(CP):bin" peersim.Simulator config/all_reduce/all_reduce_decreased8.config
+
 gossip_learning_random:
 	mkdir -p bin/
 	javac -cp "$(CP)" -d bin/ src/Constants.java
