@@ -36,6 +36,8 @@ def parse(filename):
     times = [t - first_time for t in times]
     times = [t / 1000.0 for t in times]
 
+    accs = [a / 100.0 for a in accs]
+
     return times, accs, sec[0]
 
 
