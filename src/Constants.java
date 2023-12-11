@@ -7,5 +7,5 @@ public class Constants {
     /**
      * Defines the number of training iterations to run.
      */
-    public static final int ITERATIONS = 50;
+    public static final int ITERATIONS = 30;
 }
