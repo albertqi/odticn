@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import peersim.cdsim.CDProtocol;
 import peersim.core.CommonState;
@@ -27,11 +26,6 @@ public abstract class NodeBase implements CDProtocol {
     private static final String initScriptPath = "modules/init.py";
     private static final String trainScriptPath = "modules/train.py";
     private static final String testScriptPath = "modules/test.py";
-
-    /**
-     * Tracks when to end the simulation.
-     */
-    public static final AtomicInteger nodesAtAccuracy = new AtomicInteger(0);
 
     /**
      * The time the first training iteration started running.
@@ -68,11 +62,6 @@ public abstract class NodeBase implements CDProtocol {
      * List of current latencies from every other node to this node.
      */
     private double[] currLatencies;
-
-    /**
-     * Tracks whether this node has reached the target accuracy.
-     */
-    private boolean atAccuracy;
 
     /**
      * Shares this model's weights throughout the network.
@@ -127,13 +116,10 @@ public abstract class NodeBase implements CDProtocol {
                     shareWeights(node, protocolID);
                     System.out.println("Node " + node.getID() + ": iteration " + currentIteration + " complete. Accuracy = " + testAccuracy);
 
-                    if (testAccuracy > 65 && !atAccuracy) {
-                        atAccuracy = true;
-                        if (nodesAtAccuracy.incrementAndGet() >= Constants.NETWORK_SIZE) {
-                            long endTime = System.currentTimeMillis();
-                            System.out.printf("Simulation time: %.2f seconds\n", (endTime - simulationStartTime) / 1000.0);
-                            System.exit(0);
-                        }
+                    if (testAccuracy > 90) {
+                        long endTime = System.currentTimeMillis();
+                        System.out.printf("Simulation time: %.2f seconds\n", (endTime - simulationStartTime) / 1000.0);
+                        System.exit(0);
                     }
                 }
             });
