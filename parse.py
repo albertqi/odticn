@@ -56,6 +56,7 @@ def main():
     for filename in filenames:
         times, accs, sec = parse(filename)
         plt.plot(times, accs, label=LABELS[count])
+        print(f"{LABELS[count]}\t{sec}")
         count += 1
 
     plt.xlabel("Time (sec.)")
