@@ -2,10 +2,10 @@ import peersim.config.Configuration;
 import peersim.core.Node;
 
 /**
- * This class implements the AllReduce scheme for communicating weight within
+ * This class implements the AllReduceDecreased scheme for communicating weight within
  * the network with a constant decreased aggregration frequency.
  */
-public class DecreasedAllReduce extends AllReduce {
+public class AllReduceDecreased extends AllReduce {
 
     /**
      * The cycle frequency in which to perform all reduce.
@@ -14,7 +14,7 @@ public class DecreasedAllReduce extends AllReduce {
 
     private int cycle_count = 0;
 
-    public DecreasedAllReduce(String prefix) {
+    public AllReduceDecreased(String prefix) {
         super(prefix);
         SHARE_FREQUENCY = Configuration.getInt("protocol.avg.freq");
     }
@@ -32,6 +32,6 @@ public class DecreasedAllReduce extends AllReduce {
 
     @Override
     public Object clone() {
-        return new DecreasedAllReduce("DecreasedAllReduce");
+        return new AllReduceDecreased("AllReduceDecreased");
     }
 }
