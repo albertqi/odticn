@@ -1,18 +1,3 @@
-mkdir -p bin/
-javac -cp "lib/peersim-1.0.5.jar:lib/jep-2.3.0.jar:lib/djep-1.0.0.jar:bin" -d bin/ src/Constants.java
-javac -cp "lib/peersim-1.0.5.jar:lib/jep-2.3.0.jar:lib/djep-1.0.0.jar:bin" -d bin/ src/NodeBase.java
-javac -cp "lib/peersim-1.0.5.jar:lib/jep-2.3.0.jar:lib/djep-1.0.0.jar:bin" -d bin/ src/gossip_learning/GossipLearningRandom.java
-java -cp "lib/peersim-1.0.5.jar:lib/jep-2.3.0.jar:lib/djep-1.0.0.jar:bin:bin" peersim.Simulator config/gossip_learning/gossip_learning_random.config
-
-
-
-Initializing model...
-Initializing model...
-Initializing model...
-Initializing model...
-Starting worker thread for node 1
-Starting worker thread for node 0
-Starting worker thread for node 2
 [1702280310535]: Node 2: iteration 0 complete. Accuracy = 44.6
 [1702280310853]: Node 0: iteration 0 complete. Accuracy = 44.6
 [1702280310903]: Node 1: iteration 0 complete. Accuracy = 48.0

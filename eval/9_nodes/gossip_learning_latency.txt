@@ -1,31 +1,3 @@
-mkdir -p bin/
-javac -cp "lib/peersim-1.0.5.jar:lib/jep-2.3.0.jar:lib/djep-1.0.0.jar:bin" -d bin/ src/Constants.java
-javac -cp "lib/peersim-1.0.5.jar:lib/jep-2.3.0.jar:lib/djep-1.0.0.jar:bin" -d bin/ src/NodeBase.java
-javac -cp "lib/peersim-1.0.5.jar:lib/jep-2.3.0.jar:lib/djep-1.0.0.jar:bin" -d bin/ src/gossip_learning/GossipLearningRandom.java
-javac -cp "lib/peersim-1.0.5.jar:lib/jep-2.3.0.jar:lib/djep-1.0.0.jar:bin" -d bin/ src/gossip_learning/GossipLearningLatency.java
-java -cp "lib/peersim-1.0.5.jar:lib/jep-2.3.0.jar:lib/djep-1.0.0.jar:bin:bin" peersim.Simulator config/gossip_learning/gossip_learning_latency.config
-
-
-
-Initializing model...
-Initializing model...
-Initializing model...
-Initializing model...
-Initializing model...
-Initializing model...
-Initializing model...
-Initializing model...
-Initializing model...
-Initializing model...
-Starting worker thread for node 1
-Starting worker thread for node 8
-Starting worker thread for node 6
-Starting worker thread for node 3
-Starting worker thread for node 4
-Starting worker thread for node 5
-Starting worker thread for node 7
-Starting worker thread for node 0
-Starting worker thread for node 2
 [1702275100228]: Node 2: iteration 0 complete. Accuracy = 39.7
 [1702275100424]: Node 1: iteration 0 complete. Accuracy = 34.7
 [1702275102334]: Node 6: iteration 0 complete. Accuracy = 43.8
@@ -111,26 +83,18 @@ Starting worker thread for node 2
 [1702275680923]: Node 5: iteration 27 complete. Accuracy = 67.4
 [1702275718110]: Node 3: iteration 27 complete. Accuracy = 85.1
 [1702275724692]: Node 0: iteration 29 complete. Accuracy = 86.5
-Simulation time: 680.21 seconds
 [1702275736126]: Node 1: iteration 27 complete. Accuracy = 78.1
 [1702275740432]: Node 5: iteration 29 complete. Accuracy = 83.6
-Simulation time: 695.95 seconds
 [1702275741201]: Node 4: iteration 27 complete. Accuracy = 79.0
 [1702275741765]: Node 8: iteration 27 complete. Accuracy = 85.5
 [1702275743150]: Node 6: iteration 27 complete. Accuracy = 86.1
 [1702275748708]: Node 7: iteration 27 complete. Accuracy = 83.9
 [1702275750877]: Node 2: iteration 27 complete. Accuracy = 80.5
 [1702275763125]: Node 3: iteration 29 complete. Accuracy = 75.2
-Simulation time: 718.64 seconds
 [1702275778313]: Node 1: iteration 29 complete. Accuracy = 67.2
-Simulation time: 733.83 seconds
 [1702275786597]: Node 8: iteration 29 complete. Accuracy = 73.4
-Simulation time: 742.11 seconds
 [1702275786621]: Node 4: iteration 29 complete. Accuracy = 88.6
-Simulation time: 742.14 seconds
 [1702275787188]: Node 6: iteration 29 complete. Accuracy = 87.7
-Simulation time: 742.70 seconds
 [1702275788001]: Node 7: iteration 29 complete. Accuracy = 88.9
-Simulation time: 743.52 seconds
 [1702275788096]: Node 2: iteration 29 complete. Accuracy = 89.0
 Simulation time: 743.61 seconds

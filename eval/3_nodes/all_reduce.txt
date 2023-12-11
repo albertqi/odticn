@@ -1,18 +1,3 @@
-mkdir -p bin/
-javac -cp "lib/peersim-1.0.5.jar:lib/jep-2.3.0.jar:lib/djep-1.0.0.jar:bin" -d bin/ src/Constants.java
-javac -cp "lib/peersim-1.0.5.jar:lib/jep-2.3.0.jar:lib/djep-1.0.0.jar:bin" -d bin/ src/NodeBase.java
-javac -cp "lib/peersim-1.0.5.jar:lib/jep-2.3.0.jar:lib/djep-1.0.0.jar:bin" -d bin/ src/all_reduce/AllReduce.java
-java -cp "lib/peersim-1.0.5.jar:lib/jep-2.3.0.jar:lib/djep-1.0.0.jar:bin:bin" peersim.Simulator config/all_reduce/all_reduce.config
-
-
-
-Initializing model...
-Initializing model...
-Initializing model...
-Initializing model...
-Starting worker thread for node 1
-Starting worker thread for node 0
-Starting worker thread for node 2
 [1702279799074]: Node 0: iteration 0 complete. Accuracy = 51.5
 [1702279799141]: Node 2: iteration 0 complete. Accuracy = 49.1
 [1702279799317]: Node 1: iteration 0 complete. Accuracy = 36.0
