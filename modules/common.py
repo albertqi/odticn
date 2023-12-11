@@ -10,7 +10,7 @@ transform = transforms.Compose(
 
 # Download training data.
 training_data = datasets.MNIST(
-    root="../data",
+    root="./data",
     train=True,
     download=True,
     transform=transform,
@@ -18,7 +18,7 @@ training_data = datasets.MNIST(
 
 # Download test data.
 test_data = datasets.MNIST(
-    root="../data",
+    root="./data",
     train=False,
     download=True,
     transform=transform,
@@ -41,14 +41,14 @@ device = (
 class NeuralNetwork(nn.Module):
     def __init__(self):
         super(NeuralNetwork, self).__init__()
-        self.conv1 = nn.Conv2d(1, 32, 3, 1)
+        self.conv = nn.Conv2d(1, 32, 3, 1)
         self.dropout1 = nn.Dropout(0.25)
         self.dropout2 = nn.Dropout(0.5)
         self.fc1 = nn.Linear(5408, 128)
         self.fc2 = nn.Linear(128, 10)
 
     def forward(self, x):
-        x = self.conv1(x)
+        x = self.conv(x)
         x = F.relu(x)
         x = F.max_pool2d(x, 2)
         x = self.dropout1(x)
