@@ -26,7 +26,7 @@ public class GossipLearningLatency extends GossipLearningRandom {
         double totalLatency = 0.0;
         for (int i = 0; i < neighbors.size(); i++) {
             int neighborID = (int) neighbors.get(i).getID();
-            totalLatency += prevLatencies[neighborID];
+            totalLatency += 1.0 / prevLatencies[neighborID];
             latenciesCum.add(totalLatency);
         }
         double rand = CommonState.r.nextDouble() * totalLatency;
