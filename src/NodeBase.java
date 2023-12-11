@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import peersim.cdsim.CDProtocol;
 import peersim.core.CommonState;
@@ -30,7 +31,12 @@ public abstract class NodeBase implements CDProtocol {
     /**
      * Tracks when to end the simulation.
      */
-    public static final CountDownLatch simulationComplete = new CountDownLatch(1);
+    public static final AtomicInteger nodesAtAccuracy = new AtomicInteger(0);
+
+    /**
+     * The time the first training iteration started running.
+     */
+    public static long simulationStartTime;
 
     /**
      * The weights for the current model iteration.
@@ -49,19 +55,9 @@ public abstract class NodeBase implements CDProtocol {
     private double testLoss;
 
     /**
-     * Tracks whether to train this cycle or share weights.
-     */
-    private boolean trainCycle;
-
-    /**
      * Tracks how many training cycles have been completed.
      */
     private int currentIteration;
-
-    /**
-     * Tracks the accumlated latency in sending weights to this node.
-     */
-    private double receiveLatency;
 
     /**
      * Worker thread that performs the training/weight sharing loops.
@@ -69,9 +65,14 @@ public abstract class NodeBase implements CDProtocol {
     private Thread operationsThread;
     
     /**
-     * List of current latencies from this node to every other node.
+     * List of current latencies from every other node to this node.
      */
     private double[] currLatencies;
+
+    /**
+     * Tracks whether this node has reached the target accuracy.
+     */
+    private boolean atAccuracy;
 
     /**
      * Shares this model's weights throughout the network.
@@ -84,8 +85,6 @@ public abstract class NodeBase implements CDProtocol {
     public abstract Object clone();
 
     public NodeBase(String name) {
-        currentIteration = 0;
-        trainCycle = true;
         modelWeights = new ArrayList<>();
         receivedModels = new ConcurrentLinkedDeque<>();
 
@@ -115,6 +114,11 @@ public abstract class NodeBase implements CDProtocol {
     public void nextCycle(Node node, int protocolID) {
         if (operationsThread == null) {
             operationsThread = new Thread(() -> {
+                // Start measuring time.
+                if (simulationStartTime == 0) {
+                    simulationStartTime = System.currentTimeMillis();
+                }
+
                 while (true) {
                     modelWeights = train(node.getIndex());
                     testAccuracy = test(node.getIndex());
@@ -123,29 +127,29 @@ public abstract class NodeBase implements CDProtocol {
                     shareWeights(node, protocolID);
                     System.out.println("Node " + node.getID() + ": iteration " + currentIteration + " complete. Accuracy = " + testAccuracy);
 
-                    if (testAccuracy > 90) {
-                        System.exit(0);
+                    if (testAccuracy > 65 && !atAccuracy) {
+                        atAccuracy = true;
+                        if (nodesAtAccuracy.incrementAndGet() >= Constants.NETWORK_SIZE) {
+                            long endTime = System.currentTimeMillis();
+                            System.out.printf("Simulation time: %.2f seconds\n", (endTime - simulationStartTime) / 1000.0);
+                            System.exit(0);
+                        }
                     }
                 }
             });
+
             System.out.println("Starting worker thread for node " + node.getID());
             operationsThread.start();
             return;
         }
 
         // Put the simulator to sleep.
+        CountDownLatch waitForever = new CountDownLatch(1);
         try {
-            simulationComplete.await();
+            waitForever.await();
         } catch (InterruptedException e) {
             // Do nothing...
         }
-    }
-
-    /**
-     * Returns whether the current cycle is a training cycle.
-     */
-    public boolean isTrainingCycle() {
-        return trainCycle;
     }
 
     /**
@@ -247,16 +251,20 @@ public abstract class NodeBase implements CDProtocol {
         return input;
     }
 
+    // Optimization hint for reading in weights faster.
+    private static final int NUM_WEIGHTS = 1000000;
     private ArrayList<Float> parseWeights(InputStream input) throws IOException {
-        ArrayList<Float> weights = new ArrayList<>();
-        byte[] buffer = new byte[8192];
+        ArrayList<Float> weights = new ArrayList<>(NUM_WEIGHTS);
+        byte[] buffer = new byte[NUM_WEIGHTS * 4];;
+        int totalBytesRead = 0;
         int bytesRead;
-        while ((bytesRead = input.read(buffer)) != -1) {
-            for (int i = 0; i < bytesRead; i += 4) {
-                byte[] bytes = { (byte) buffer[i], (byte) buffer[i + 1], (byte) buffer[i + 2], (byte) buffer[i + 3] };
-                float weight = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getFloat();
-                weights.add(weight);
-            }
+        while ((bytesRead = input.read(buffer, totalBytesRead, buffer.length - totalBytesRead)) != -1) {
+            totalBytesRead += bytesRead;
+        }
+        for (int i = 0; i < totalBytesRead; i += 4) {
+            byte[] bytes = { (byte) buffer[i], (byte) buffer[i + 1], (byte) buffer[i + 2], (byte) buffer[i + 3] };
+            float weight = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getFloat();
+            weights.add(weight);
         }
 
         return weights;

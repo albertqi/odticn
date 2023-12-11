@@ -9,8 +9,11 @@ def main():
     num_weights, num_nodes, id, curr_iter, num_iter = map(int, sys.argv[1:6])
 
     # Initialize the data loader.
-    shard = Subset(training_data, range(id, len(training_data), num_nodes))
-    subset = Subset(shard, range(curr_iter, len(shard), num_iter))
+    shard_size = len(training_data) // num_nodes
+    mini_batch_size = shard_size // num_iter
+
+    shard = Subset(training_data, range(id * shard_size, id * shard_size + shard_size))
+    subset = Subset(shard, range(curr_iter * mini_batch_size, curr_iter * mini_batch_size + mini_batch_size))
     dataloader = DataLoader(subset, batch_size=batch_size)
 
     # Read the weights from `stdin` as bytes.
