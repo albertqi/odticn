@@ -38,7 +38,7 @@ public abstract class NodeBase implements CDProtocol {
     protected ArrayList<Float> modelWeights;
 
     /**
-     * The models that this node has reveiced from peers since the last cycle.
+     * The models that this node has received from peers since the last cycle.
      */
     protected ConcurrentLinkedDeque<ArrayList<Float>> receivedModels;
 
@@ -77,10 +77,10 @@ public abstract class NodeBase implements CDProtocol {
         modelWeights = new ArrayList<>();
         receivedModels = new ConcurrentLinkedDeque<>();
 
-        // Initialize latencies randomly from 0.5 to 3.5 seconds.
+        // Initialize latencies randomly from 1.0 to 5.0 seconds.
         currLatencies = new double[Constants.NETWORK_SIZE];
         for (int i = 0; i < currLatencies.length; i++) {
-            currLatencies[i] = 0.5 + CommonState.r.nextDouble() * 3;
+            currLatencies[i] = 1.0 + CommonState.r.nextDouble() * 4.0;
         }
 
         try {
@@ -163,8 +163,8 @@ public abstract class NodeBase implements CDProtocol {
 
         synchronized (currLatencies) {
             double latency = currLatencies[senderID];
-            // Update latency by adding a random value between -0.2 and 0.2.
-            double delta = 0.4 * CommonState.r.nextDouble() - 0.2;
+            // Update latency by adding a random value between -0.5 and 0.5.
+            double delta = CommonState.r.nextDouble() - 0.5;
             currLatencies[senderID] = Math.max(latency + delta, 0.0);
             
             return latency;
