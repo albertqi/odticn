@@ -114,9 +114,9 @@ public abstract class NodeBase implements CDProtocol {
                     currentIteration++;
 
                     shareWeights(node, protocolID);
-                    System.out.println("Node " + node.getID() + ": iteration " + currentIteration + " complete. Accuracy = " + testAccuracy);
+                    System.out.println("[" + System.currentTimeMillis() + "]: " + "Node " + node.getID() + ": iteration " + currentIteration + " complete. Accuracy = " + testAccuracy);
 
-                    if (testAccuracy > 90) {
+                    if (testAccuracy >= 90) {
                         long endTime = System.currentTimeMillis();
                         System.out.printf("Simulation time: %.2f seconds\n", (endTime - simulationStartTime) / 1000.0);
                         System.exit(0);
