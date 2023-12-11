@@ -34,7 +34,8 @@ public class GossipLearningLatency extends GossipLearningRandom {
             if (rand <= latenciesCum.get(i)) {
                 Node neighbor = neighbors.get(i);
                 NodeBase neighborGossipLearning = (NodeBase) neighbor.getProtocol(protocolID);
-                prevLatencies[(int) neighbor.getID()] = neighborGossipLearning.sendTo((int) node.getID(), modelWeights);
+                double latency = neighborGossipLearning.sendTo((int) node.getID(), modelWeights);
+                prevLatencies[(int) neighbor.getID()] = latency;
                 return i;
             }
         }
