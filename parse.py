@@ -27,7 +27,7 @@ def parse(filename):
 
     times, accs = [], []
 
-    for i in range(1, len(iters) + 1):
+    for i in sorted(iters.keys()):
         timestamps, accuracies = iters[i]
         times.append(avg(timestamps))
         accs.append(avg(accuracies))
